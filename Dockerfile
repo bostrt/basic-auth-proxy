@@ -1,15 +1,25 @@
-FROM httpd:latest
+FROM fedora:latest
 MAINTAINER bostrt@gmail.com
 
-RUN echo Include conf/extras/auth-proxy.conf >> /usr/local/apache2/conf/httpd.conf
-RUN mkdir /usr/local/apache2/secret
+RUN dnf install -y \
+    httpd \
+    mod_ssl \
+    openssl && \
+    dnf clean all
 
-#ADD htpasswd /usr/local/apache2/secret/htpasswd
-ADD auth-proxy.conf /usr/local/apache2/conf/extras/auth-proxy.conf
+#RUN mkdir /usr/local/apache2/secret
+RUN mv /etc/httpd/conf.d/ssl.conf /etc/httpd/conf.d/ssl.conf.disable
+RUN rm -rf /run/httpd && mkdir /run/httpd && chmod -R a+rwx /run/httpd
+RUN mkdir /etc/httpd/secret && chmod -R a+rwx /etc/httpd/secret
+
+ADD httpd.conf /etc/httpd/conf/httpd.conf
+ADD auth-proxy.conf /etc/httpd/conf.d/auth-proxy.conf
 ADD startup.sh /usr/local/bin/
 
-VOLUME /usr/local/apache2/secret/
+VOLUME /etc/httpd/secret
 
-EXPOSE 80 443
+EXPOSE 8080
+
+USER 1001
 
 CMD ["startup.sh"]
