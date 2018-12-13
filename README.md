@@ -25,7 +25,7 @@ You can also include your own `htpasswd` file using a secret:
 # htpasswd -b -c /tmp/htpasswd jamesbond T0pSecret
 # oc create secret generic myhtpasswd --from-file=/tmp/htpasswd
 # oc new-app --env PROXY_TARGET=http://otherpod.project.svc:8000 bostrt/basic-auth-proxy
-# oc volumes dc/basic-auth-proxy --add --overwrite --secret-name=myhtpasswd -m /etc/httpd/secret
+# oc set volumes dc/basic-auth-proxy --add --overwrite --secret-name=myhtpasswd -m /etc/httpd/secret
 ```
 
 You probably want a route too:
